@@ -1,45 +1,44 @@
 import streamlit as st
+import streamlit.components as stc
+#Utils
+import base64
+import time
+import pandas as pd
+timestr = time.strftime("%Y%m%d-%H%M%S")
 
-#utils
-import logging
+class FileDownloader(object):
+    """docstring for FileDownloader
+    >>> download = FileDownloader(data,filename,file_ext).download()
 
-#Terminal
-# FORMAT
-LOGS_FORMAT = "%(levelname)s %(asctime)s.%(msecs)03d-%(message)s"
-# create a logger
-# logging.basicConfig(level=logging.DEBUG,format=LOGS_FORMAT)
-# logger = logging.getLogger(__name__)
+    """
+    def __init__(self, data,filename='myfile',file_ext='txt'):
+        super(FileDownloader, self).__init__()
+        self.data = data
+        self.filename = filename
+        self.file_ext = file_ext
 
-logger = logging.getLogger(__name__)
-if not logger.handlers:
-    logger.setLevel(logging.DEBUG)
-    file_handler = logging.FileHandler("activity.log")
-    file_handler.setFormatter(logging.Formatter('%(levelname)s %(asctime)s:%(levelname)s:%(message)s'))
-    logger.addHandler(file_handler)
-
+    def download(self):
+        b64 = base64.b64encode(self.data.encode()).decode()
+        new_filename = "{}_{}_.{}".format(self.filename,timestr,self.file_ext)
+        st.markdown("#### Download File ###")
+        href = f'<a href="data:file/{self.file_ext};base64,{b64}" download="{new_filename}">Click Here!!</a>'
+        st.markdown(href,unsafe_allow_html=True)
 def main():
-    st.title("Add logs to all apps")
-    st.text("Track all activities/pages of apps")
-
-    menu = ['Home','EDA','ML','About']
+    menu = ["Home","CSV","About"]
     choice = st.sidebar.selectbox("Menu",menu)
-
-    if choice == 'Home':
-        st.title("Main App")
+    if choice =='Home':
         st.subheader("Home")
-        logger.info("Home Section")
-    elif choice == 'EDA':
-        st.subheader("EDA")
-        logger.info("EDA")
-    elif choice == 'ML':
-        st.subheader("ML")
-        logger.info("ML")
-        st.subheader("Analytics")
-        logger.info("Analytics Section")
-    else:
-        st.subheader('About')
-        logger.info("About")
+        my_text = st.text_area("Your Message")
+        if st.button("Save"):
+            st.write(my_text)
+            download = FileDownloader(my_text).download()
 
+    elif choice == "CSV":
+        df = pd.read_csv("data/iris.csv")
+        st.dataframe(df)
+        FileDownloader(df.to_csv(),file_ext='csv').download()
+    else:
+        st.subheader("About")
 
 if __name__ == '__main__':
     main()
