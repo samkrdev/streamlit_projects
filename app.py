@@ -1,44 +1,54 @@
 import streamlit as st
-import streamlit.components as stc
-#Utils
-import base64
-import time
 import pandas as pd
-timestr = time.strftime("%Y%m%d-%H%M%S")
-
-class FileDownloader(object):
-    """docstring for FileDownloader
-    >>> download = FileDownloader(data,filename,file_ext).download()
-
-    """
-    def __init__(self, data,filename='myfile',file_ext='txt'):
-        super(FileDownloader, self).__init__()
-        self.data = data
-        self.filename = filename
-        self.file_ext = file_ext
-
-    def download(self):
-        b64 = base64.b64encode(self.data.encode()).decode()
-        new_filename = "{}_{}_.{}".format(self.filename,timestr,self.file_ext)
-        st.markdown("#### Download File ###")
-        href = f'<a href="data:file/{self.file_ext};base64,{b64}" download="{new_filename}">Click Here!!</a>'
-        st.markdown(href,unsafe_allow_html=True)
 def main():
-    menu = ["Home","CSV","About"]
-    choice = st.sidebar.selectbox("Menu",menu)
-    if choice =='Home':
-        st.subheader("Home")
-        my_text = st.text_area("Your Message")
-        if st.button("Save"):
-            st.write(my_text)
-            download = FileDownloader(my_text).download()
+    st.title("Streamlit Forms & Salary Calculator")
+    menu = ["Home", "About"]
+    choice = st.sidebar.radio("Menu", menu)
 
-    elif choice == "CSV":
-        df = pd.read_csv("data/iris.csv")
-        st.dataframe(df)
-        FileDownloader(df.to_csv(),file_ext='csv').download()
+    if choice == "Home":
+        st.subheader("Forms tutorial")
+
+        # Salary Calculator
+        # Combine forms + Columns
+        with st.form(key="salaryform", clear_on_submit=True):
+            col1, col2, col3 = st.columns([3, 2, 1])
+
+            with col1:
+                amount = st.number_input("Hourly rate in $")
+            with col2:
+                hour_per_week = st.number_input("Hours per week", 1, 120)
+            with col3:
+                st.text("Salary")
+                submit_salary = st.form_submit_button(label="Calculate")
+        if submit_salary:
+            with st.expander("Results"):
+                daily = [amount * 8]
+                weekly = [amount * hour_per_week]
+                df = pd.DataFrame({"hourly": amount, "daily": daily, "weekly": weekly})
+                df.astype(int, errors="ignore")
+                st.dataframe(df.T)
+
+        # Method 1: context manager Approach (with)
+        with st.form(key="form1", clear_on_submit=True):
+            firstname = st.text_input("Firstname")
+            lastname = st.text_input("Lastname")
+            dob = st.date_input("Date of Birth")
+
+            submit_button = st.form_submit_button(label="Signup")
+            # Result can be outside or inside the form
+            if submit_button:
+                st.success(f"Hello {firstname} you've created an account")
+
+        # Method 2
+        form2 = st.form(key="form2", clear_on_submit=True)
+        username = form2.text_input("Username")
+        jobtype = form2.selectbox("Job", ["Dev", "Data Scientist", "Doctor"])
+        submit_button2 = form2.form_submit_button("Login")
+        if submit_button2:
+            st.write(f"{username.upper()}-{jobtype}")
+
     else:
         st.subheader("About")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

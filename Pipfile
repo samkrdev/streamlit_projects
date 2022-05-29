@@ -15,6 +15,7 @@ plotly = "*"
 docx2txt = "*"
 pypdf2 = "*"
 pdfplumber = "*"
+memory-profiler = "*"
 
 [dev-packages]
 
