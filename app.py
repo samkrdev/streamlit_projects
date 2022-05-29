@@ -1,57 +1,50 @@
 import streamlit as st
 import pandas as pd
-from memory_profiler import profile
+import numpy as np
 
-@profile
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg') #Tkagg
+import seaborn as sns
+
 def main():
     st.title("Streamlit Forms & Salary Calculator")
-    menu = ["Home", "About"]
-    choice = st.sidebar.radio("Menu", menu)
+    df = pd.read_csv("data/iris.csv")
+    df2 = pd.read_csv("data/lang_data.csv")
 
-    if choice == "Home":
-        st.subheader("Forms tutorial")
+    # # Method 1
+    # fig,ax = plt.subplots()
+    # ax.scatter(*np.random.random(size=(2,100)))
+    # st.pyplot(fig)
 
-        # Salary Calculator
-        # Combine forms + Columns
-        with st.form(key="salaryform", clear_on_submit=True):
-            col1, col2, col3 = st.columns([3, 2, 1])
+    # # Method 2
+    # fig2 = plt.figure()
+    # df['species'].value_counts().plot(kind='bar')
+    # st.pyplot(fig2)
 
-            with col1:
-                amount = st.number_input("Hourly rate in $")
-            with col2:
-                hour_per_week = st.number_input("Hours per week", 1, 120)
-            with col3:
-                st.text("Salary")
-                submit_salary = st.form_submit_button(label="Calculate")
-        if submit_salary:
-            with st.expander("Results"):
-                daily = [amount * 8]
-                weekly = [amount * hour_per_week]
-                df = pd.DataFrame({"hourly": amount, "daily": daily, "weekly": weekly})
-                df.astype(int, errors="ignore")
-                st.dataframe(df.T)
+    #  # Method 3
+    # fig3,ax3 = plt.subplots()
+    # df['species'].value_counts().plot(kind='bar')
+    # st.pyplot(fig3)
+        # alternative For Matplotlib
+    fig = plt.figure()
+    sns.countplot(data=df,x=df['species'])
+    st.pyplot(fig)
 
-        # Method 1: context manager Approach (with)
-        with st.form(key="form1", clear_on_submit=True):
-            firstname = st.text_input("Firstname")
-            lastname = st.text_input("Lastname")
-            dob = st.date_input("Date of Birth")
+    # Bar chart
+    chart_data = pd.DataFrame(
+     np.random.randn(50, 3),
+     columns=["a", "b", "c"])
+    st.bar_chart(chart_data)
 
-            submit_button = st.form_submit_button(label="Signup")
-            # Result can be outside or inside the form
-            if submit_button:
-                st.success(f"Hello {firstname} you've created an account")
+    # Language data
+    lang_list = df2.columns.tolist()
+    lang_choices = st.multiselect("Choose Language",lang_list,default='Python')
+    new_df = df2[lang_choices]
+    st.line_chart(new_df)
+    st.area_chart(new_df,use_container_width=True )
 
-        # Method 2
-        form2 = st.form(key="form2", clear_on_submit=True)
-        username = form2.text_input("Username")
-        jobtype = form2.selectbox("Job", ["Dev", "Data Scientist", "Doctor"])
-        submit_button2 = form2.form_submit_button("Login")
-        if submit_button2:
-            st.write(f"{username.upper()}-{jobtype}")
 
-    else:
-        st.subheader("About")
 
 if __name__ == "__main__":
     main()
