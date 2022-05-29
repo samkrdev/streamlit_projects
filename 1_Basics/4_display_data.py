@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 
 # Display Data
-df=pd.read_csv("data/iris.csv")
+df = pd.read_csv("data/iris.csv")
 
 # Method 1
 
-st.dataframe(df,500,300 ) # df,width,height
+st.dataframe(df, 500, 300)  # df,width,height
 
 # You can also add a color style from pandas
 
@@ -19,11 +19,11 @@ st.table(df.head())
 st.write(df.head())
 
 # Display Json
-st.json({'data':'name'})
+st.json({"data": "name"})
 
 # Displa code
 mycode = """ 
 def sayhello():
     print("Hello World")
 """
-st.code(mycode,language='python')
+st.code(mycode, language="python")

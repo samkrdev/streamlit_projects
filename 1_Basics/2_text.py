@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def main():
     # simple text
     st.text("This is a test text")
@@ -10,12 +11,14 @@ def main():
     # title
     st.title("This is a title")
     # Markdown
-    st.markdown("""
+    st.markdown(
+        """
     ```python
     names = ['sam','amy']
     print("Hello World")
     ```
-    """)
+    """
+    )
 
     # Displaying colored text/
     st.success("Successful")
@@ -26,7 +29,8 @@ def main():
 
     # Superfunction
     st.write("## This is a text")
-    st.write(1+2)
+    st.write(1 + 2)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

@@ -11,6 +11,10 @@ seaborn = "*"
 matplotlib = "*"
 watchdog = "*"
 streamlit-quill = "*"
+plotly = "*"
+docx2txt = "*"
+pypdf2 = "*"
+pdfplumber = "*"
 
 [dev-packages]
 
