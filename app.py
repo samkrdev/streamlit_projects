@@ -1,50 +1,18 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('Agg') #Tkagg
-import seaborn as sns
+import plotly.express as px
 
 def main():
-    st.title("Streamlit Forms & Salary Calculator")
-    df = pd.read_csv("data/iris.csv")
-    df2 = pd.read_csv("data/lang_data.csv")
+    st.title("Plotting in Streamlit with plotly")
+    df = pd.read_csv("data/prog_languages_data.csv")
+    st.dataframe(df)
 
-    # # Method 1
-    # fig,ax = plt.subplots()
-    # ax.scatter(*np.random.random(size=(2,100)))
-    # st.pyplot(fig)
+    fig = px.pie(df,values='Sum',names='lang',title='Pie chart')
+    st.plotly_chart(fig,config= {'displaylogo': False})
 
-    # # Method 2
-    # fig2 = plt.figure()
-    # df['species'].value_counts().plot(kind='bar')
-    # st.pyplot(fig2)
-
-    #  # Method 3
-    # fig3,ax3 = plt.subplots()
-    # df['species'].value_counts().plot(kind='bar')
-    # st.pyplot(fig3)
-        # alternative For Matplotlib
-    fig = plt.figure()
-    sns.countplot(data=df,x=df['species'])
-    st.pyplot(fig)
-
-    # Bar chart
-    chart_data = pd.DataFrame(
-     np.random.randn(50, 3),
-     columns=["a", "b", "c"])
-    st.bar_chart(chart_data)
-
-    # Language data
-    lang_list = df2.columns.tolist()
-    lang_choices = st.multiselect("Choose Language",lang_list,default='Python')
-    new_df = df2[lang_choices]
-    st.line_chart(new_df)
-    st.area_chart(new_df,use_container_width=True )
-
-
+    fig2 = px.bar(df,x='lang',y='Sum')
+    st.plotly_chart(fig2,config= {'displaylogo': False})
 
 if __name__ == "__main__":
     main()
