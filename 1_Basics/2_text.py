@@ -18,6 +18,15 @@ def main():
     """)
 
     # Displaying colored text/
+    st.success("Successful")
+    st.warning("Danger")
+    st.info("This is information")
+    st.error("This is an error")
+    st.exception("This is an exception")
+
+    # Superfunction
+    st.write("## This is a text")
+    st.write(1+2)
 
 if __name__ == '__main__':
     main()
