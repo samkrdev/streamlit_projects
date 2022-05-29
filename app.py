@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+from memory_profiler import profile
+
+@profile
 def main():
     st.title("Streamlit Forms & Salary Calculator")
     menu = ["Home", "About"]
