@@ -1,84 +1,75 @@
-import streamlit as st
-import streamlit.components.v1 as stc
+import time  # to simulate a real time data, time loop
+import numpy as np  # np mean, np random
+import pandas as pd  # read csv, df manipulation
+import plotly.express as px  # interactive charts
+import streamlit as st  # 🎈 data web app development
+
+# read csv from a github repo
+dataset_url = "https://raw.githubusercontent.com/Lexie88rus/bank-marketing-analysis/master/bank.csv"
+# read csv from a URL
+@st.experimental_memo
+def get_data() -> pd.DataFrame:
+    return pd.read_csv(dataset_url)
 
 
-HTML_BANNER = """
-    <div style="background-color:#464e5f;padding:10px;border-radius:10px;font-size:{}px">
-    <h1 style="color:white;text-align:center;">Streamlit is Awesome </h1>
-    <h1 style="color:white;text-align:center;">Session State is Here!! </h1>
-    </div>
-    """
-def main():
-    st.title("Sessions")
+df = get_data()
 
-    menu = ["Home", "Custom_settings", "About"]
-    choice = st.sidebar.selectbox("Menu", menu)
+st.set_page_config(
+    page_title="Real-Time Data Science Dashboard",
+    page_icon="✅",
+    layout="wide",
+)
+# dashboard title
+st.title("Real-Time / Live Data Science Dashboard")
+# top-level filters
+job_filter = st.selectbox("Select the Job", pd.unique(df["job"]))
+# creating a single-element container
+placeholder = st.empty()
+# dataframe filter
+df = df[df["job"] == job_filter]
+# near real-time / live feed simulation
+for seconds in range(200):
+    df["age_new"] = df["age"] * np.random.choice(range(1, 5))
+    df["balance_new"] = df["balance"] * np.random.choice(range(1, 5))
+    # creating KPIs
+    avg_age = np.mean(df["age_new"])
+    count_married = int(
+        df[(df["marital"] == "married")]["marital"].count()
+        + np.random.choice(range(1, 30))
+    )
+    balance = np.mean(df["balance_new"])
+    with placeholder.container():
+        # create three columns
+        kpi1, kpi2, kpi3 = st.columns(3)
+        # fill in those three columns with respective metrics or KPIs
+        kpi1.metric(
+            label="Age ⏳",
+            value=round(avg_age),
+            delta=round(avg_age) - 10,
+        )
 
-    if choice == "Home":
-        st.subheader("Home Page")
-        # Without session
-        st.info("Without Session State")
-        counter_without_state = 0
-        st.write("Initial Value", counter_without_state)
-        increment = st.button("Increment Without State")
-        if increment:
-            counter_without_state += 1
-        st.write("Counts without session",counter_without_state)
+        kpi2.metric(
+            label="Married Count 💍",
+            value=int(count_married),
+            delta=-10 + count_married,
+        )
 
-        # With session
-        st.info("With session state")
-        st.write(st.session_state)
-        if 'counter_one' not in st.session_state:
-            st.session_state.counter_one = 0
-        if 'counter_two' not in st.session_state:
-            st.session_state.counter_two = 0
-        increment = st.button("Increment by one")
-        if increment:
-            st.session_state.counter_one += 1
-        # Result of update
-        st.write("Counts[with session state]",st.session_state.counter_one)
+        kpi3.metric(
+            label="A/C Balance ＄",
+            value=f"$ {round(balance,2)} ",
+            delta=-round(balance / count_married) * 100,
+        )
+        # create two columns for charts
+        fig_col1, fig_col2 = st.columns(2)
+        with fig_col1:
+            st.markdown("### First Chart")
+            fig = px.density_heatmap(data_frame=df, y="age_new", x="marital")
+            st.write(fig)
 
-        col1,col2 = st.columns(2)
-        with col1:
-            increment = st.button("Increment by One")
-            if increment:
-                st.session_state.counter_two += 1
-
-        with col2:
-            decrement = st.button("Decrement by One")
-            if decrement:
-                st.session_state.counter_two -= 1
-
-        st.write("Counts with session state",st.session_state.counter_two)
-            
-    elif choice == "Custom_settings":
-        st.subheader("App Custom Settings")
-
-        # Define and Initialize State
-        if 'fontsize' not in st.session_state:
-            st.session_state.fontsize = 12
-
-
-        f1,f2 = st.columns(2)
-
-        with f1:
-            # Create a button for fxn/cb fxn
-            font_increment = st.button('Increase Font')
-            if font_increment:
-                st.session_state.fontsize += 5
-
-
-        with f2:
-            # Create a button for fxn/cb fxn
-            font_decrement = st.button('Decrease Font')
-            if font_decrement:
-                st.session_state.fontsize -= 5	
-
-
-        # Results
-        st.write("Current Font Size",st.session_state.fontsize)
-        stc.html(HTML_BANNER.format(st.session_state.fontsize))
-
-
-if __name__ == "__main__":
-    main()
+        with fig_col2:
+            st.markdown("### Second Chart")
+            fig2 = px.histogram(data_frame=df, x="age_new")
+            st.write(fig2)
+        st.markdown("### Detailed Data View")
+        st.dataframe(df)
+        time.sleep(1)
