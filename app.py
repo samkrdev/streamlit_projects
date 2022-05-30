@@ -10,15 +10,16 @@ dataset_url = "https://raw.githubusercontent.com/Lexie88rus/bank-marketing-analy
 @st.experimental_memo
 def get_data() -> pd.DataFrame:
     return pd.read_csv(dataset_url)
-
-
-df = get_data()
-
+    
 st.set_page_config(
     page_title="Real-Time Data Science Dashboard",
     page_icon="✅",
     layout="wide",
 )
+
+df = get_data()
+
+
 # dashboard title
 st.title("Real-Time / Live Data Science Dashboard")
 # top-level filters
@@ -28,6 +29,7 @@ placeholder = st.empty()
 # dataframe filter
 df = df[df["job"] == job_filter]
 # near real-time / live feed simulation
+
 for seconds in range(200):
     df["age_new"] = df["age"] * np.random.choice(range(1, 5))
     df["balance_new"] = df["balance"] * np.random.choice(range(1, 5))
